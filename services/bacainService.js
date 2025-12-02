@@ -54,22 +54,22 @@ async function getUserById(id) {
 }
 
 async function addUser(data) {
-  const { name, email, password, nohp } = data;
+  const { username, user_email, password, nohp } = data;
   const result = await pool.query(
-    "INSERT INTO users (name, email, password, nohp) VALUES ($1, $2, $3, $4) RETURNING *",
-    [name, email, password, nohp]
+    "INSERT INTO users (username, user_email, password, nohp) VALUES ($1, $2, $3, $4) RETURNING *",
+    [username, user_email, password, nohp]
   );
   return result.rows[0];
 }
 
 async function updateUser(id, data) {
-  const { name, email, password, nohp } = data;
+  const { username, user_email, password, nohp } = data;
   const result = await pool.query(
     `UPDATE users
-SET name = $1, email = $2, password = $3, nohp = $4
+SET username = $1, user_email = $2, password = $3, nohp = $4
 WHERE user_id = $5
 RETURNING *`,
-    [name, email, password, nohp, id]
+    [username, user_email, password, nohp, id]
   );
   return result.rows[0];
 }
