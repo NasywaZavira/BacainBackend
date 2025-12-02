@@ -166,7 +166,9 @@ async function getUserById(req, res) {
 
 async function addUser(req, res) {
   try {
-    const newUser = await usersService.addUser(req.body);
+    const { username, user_email, password, nohp } = req.body;
+    const newUser = await usersService.addUser({ username, user_email, password, nohp });
+
     res.status(201).json({
       status: "success",
       code: 201,
@@ -184,10 +186,8 @@ async function addUser(req, res) {
 
 async function updateUser(req, res) {
   try {
-    const updatedUser = await usersService.updateUser(
-      req.params.id,
-      req.body
-    );
+    const { username, user_email, password, nohp } = req.body;
+    const updatedUser = await usersService.updateUser(req.params.id, { username, user_email, password, nohp });
     if (!updatedUser) {
       return res.status(404).json({
         status: "error",
