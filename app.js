@@ -9,16 +9,22 @@ const app = express();
 // CORS configuration
 const corsOptions = {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   origin: ["http://localhost:5173", "http://127.0.0.1:5173", "https://bacain-azure.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
   optionsSuccessStatus: 200,
 =======
+=======
+>>>>>>> Stashed changes
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 };
 
