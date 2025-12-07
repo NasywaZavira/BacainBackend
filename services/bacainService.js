@@ -87,7 +87,6 @@ async function getAllAdmins() {
   const result = await pool.query("SELECT * FROM admins ORDER BY admin_id ASC");
   return result.rows;
 }
-
 async function getAdminById(id) {
   const result = await pool.query("SELECT * FROM admins WHERE admin_id = $1", [
     id,
@@ -124,6 +123,65 @@ async function deleteAdmin(id) {
   return result.rows[0];
 }
 
+
+// BORROWINGS
+async function getAllBorrowings() {
+  const result = await pool.query(
+    `SELECT br.*, bk.title AS book_title, u.username AS user_name, a.admin_name AS admin_name
+     FROM borrowings br
+     LEFT JOIN books bk ON br.book_id = bk.book_id
+     LEFT JOIN users u ON br.user_id = u.user_id
+     LEFT JOIN admins a ON br.admin_id = a.admin_id
+     ORDER BY br.borrow_id ASC`
+  );
+  return result.rows;
+}
+
+async function getBorrowingById(id) {
+  const result = await pool.query(
+    `SELECT br.*, bk.title AS book_title, u.username AS user_name, a.admin_name AS admin_name
+     FROM borrowings br
+     LEFT JOIN books bk ON br.book_id = bk.book_id
+     LEFT JOIN users u ON br.user_id = u.user_id
+     LEFT JOIN admins a ON br.admin_id = a.admin_id
+     WHERE br.borrow_id = $1`,
+    [id]
+  );
+  return result.rows[0];
+}
+
+async function addBorrowing(data) {
+  const { book_id, user_id, admin_id, borrow_date, return_date, status } = data;
+  const result = await pool.query(
+    `INSERT INTO borrowings (book_id, user_id, admin_id, borrow_date, return_date, status)
+     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+    [book_id, user_id, admin_id || null, borrow_date || null, return_date || null, status || 'Dipinjam']
+  );
+  return result.rows[0];
+}
+
+async function updateBorrowing(id, data) {
+  const { book_id, user_id, admin_id, borrow_date, return_date, status } = data;
+  const result = await pool.query(
+    `UPDATE borrowings
+     SET book_id = $1, user_id = $2, admin_id = $3, borrow_date = $4, return_date = $5, status = $6
+     WHERE borrow_id = $7
+     RETURNING *`,
+    [book_id, user_id, admin_id || null, borrow_date || null, return_date || null, status || 'Dipinjam', id]
+  );
+  return result.rows[0];
+}
+
+async function deleteBorrowing(id) {
+  const result = await pool.query(
+    "DELETE FROM borrowings WHERE borrow_id = $1 RETURNING *",
+    [id]
+  );
+  return result.rows[0];
+}
+
+
+
 module.exports = {
   getAllBooks,
   getBooksById,
@@ -140,4 +198,10 @@ module.exports = {
   addAdmin,
   updateAdmin,
   deleteAdmin,
+  getAllBorrowings,
+  getBorrowingById,
+  addBorrowing,
+  updateBorrowing,
+  deleteBorrowing,
+
 };

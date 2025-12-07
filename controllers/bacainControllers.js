@@ -116,7 +116,6 @@ async function deleteBooks(req, res) {
   }
 }
 
-
 // USERS CONTROLLER
 const usersService = require("../services/bacainService");
 
@@ -167,7 +166,12 @@ async function getUserById(req, res) {
 async function addUser(req, res) {
   try {
     const { username, user_email, password, nohp } = req.body;
-    const newUser = await usersService.addUser({ username, user_email, password, nohp });
+    const newUser = await usersService.addUser({
+      username,
+      user_email,
+      password,
+      nohp,
+    });
 
     res.status(201).json({
       status: "success",
@@ -187,7 +191,12 @@ async function addUser(req, res) {
 async function updateUser(req, res) {
   try {
     const { username, user_email, password, nohp } = req.body;
-    const updatedUser = await usersService.updateUser(req.params.id, { username, user_email, password, nohp });
+    const updatedUser = await usersService.updateUser(req.params.id, {
+      username,
+      user_email,
+      password,
+      nohp,
+    });
     if (!updatedUser) {
       return res.status(404).json({
         status: "error",
@@ -353,6 +362,134 @@ async function deleteAdmin(req, res) {
   }
 }
 
+// BORROWINGS CONTROLLER
+const borrowingsService = require("../services/bacainService");
+
+async function getAllBorrowings(req, res) {
+  try {
+    const borrowings = await borrowingsService.getAllBorrowings();
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      message: "Borrowings retrieved successfully",
+      data: borrowings,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      code: 500,
+      message: err.message,
+    });
+  }
+}
+
+async function getBorrowingById(req, res) {
+  try {
+    const borrowing = await borrowingsService.getBorrowingById(req.params.id);
+    if (!borrowing) {
+      return res.status(404).json({
+        status: "error",
+        code: 404,
+        message: "Borrowing not found",
+      });
+    }
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      message: "Borrowing retrieved successfully",
+      data: borrowing,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      code: 500,
+      message: err.message,
+    });
+  }
+}
+
+async function addBorrowing(req, res) {
+  try {
+    const { book_id, user_id, admin_id, borrow_date, return_date, status } =
+      req.body;
+    const newBorrowing = await borrowingsService.addBorrowing({
+      book_id,
+      user_id,
+      admin_id,
+      borrow_date,
+      return_date,
+      status,
+    });
+    res.status(201).json({
+      status: "success",
+      code: 201,
+      message: "Borrowing created successfully",
+      data: newBorrowing,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      code: 500,
+      message: err.message,
+    });
+  }
+}
+
+async function updateBorrowing(req, res) {
+  try {
+    const updatedBorrowing = await borrowingsService.updateBorrowing(
+      req.params.id,
+      req.body
+    );
+    if (!updatedBorrowing) {
+      return res.status(404).json({
+        status: "error",
+        code: 404,
+        message: "Borrowing not found",
+      });
+    }
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      message: "Borrowing updated successfully",
+      data: updatedBorrowing,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      code: 500,
+      message: err.message,
+    });
+  }
+}
+
+async function deleteBorrowing(req, res) {
+  try {
+    const deletedBorrowing = await borrowingsService.deleteBorrowing(
+      req.params.id
+    );
+    if (!deletedBorrowing) {
+      return res.status(404).json({
+        status: "error",
+        code: 404,
+        message: "Borrowing not found",
+      });
+    }
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      message: "Borrowing deleted successfully",
+      data: deletedBorrowing,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      code: 500,
+      message: err.message,
+    });
+  }
+}
+
 module.exports = {
   getAllBooks,
   getBooksById,
@@ -369,4 +506,9 @@ module.exports = {
   addAdmin,
   updateAdmin,
   deleteAdmin,
+  getAllBorrowings,
+  getBorrowingById,
+  addBorrowing,
+  updateBorrowing,
+  deleteBorrowing,
 };

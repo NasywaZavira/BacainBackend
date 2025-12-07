@@ -16,6 +16,11 @@ const {
   addAdmin,
   updateAdmin,
   deleteAdmin,
+  getAllBorrowings,
+  getBorrowingById,
+  addBorrowing,
+  updateBorrowing,
+  deleteBorrowing,
 } = require("../controllers/bacainControllers");
 
 const validateId = require("../middleware/validateId");
@@ -36,7 +41,7 @@ router.get("/health", async (req, res) => {
   }
 });
 
-// Users routes (scoped to /users to avoid collision with other paths)
+// Users routes 
 router.get("/users/:id", validateId, getUserById);
 router.get("/users", getAllUsers);
 router.post("/users", addUser);
@@ -56,5 +61,12 @@ router.get("/admins/:id", validateId, getAdminById);
 router.post("/admins", addAdmin);
 router.put("/admins/:id", validateId, updateAdmin);
 router.delete("/admins/:id", validateId, deleteAdmin);
+
+// Borrowings routes
+router.get("/borrowings", getAllBorrowings);
+router.get("/borrowings/:id", validateId, getBorrowingById);
+router.post("/borrowings", addBorrowing);
+router.put("/borrowings/:id", validateId, updateBorrowing);
+router.delete("/borrowings/:id", validateId, deleteBorrowing);
 
 module.exports = router;
