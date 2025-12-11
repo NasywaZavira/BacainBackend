@@ -171,21 +171,46 @@ async function addBorrowing(data) {
 }
 
 async function updateBorrowing(id, data) {
-  const { book_id, user_id, admin_id, borrow_date, return_date, status } = data;
+  // Build dynamic update query based on provided fields
+  const fields = [];
+  const values = [];
+  let paramIndex = 1;
+
+  // Only include fields that are provided in the data
+  if (data.book_id !== undefined) {
+    fields.push(`book_id = $${paramIndex++}`);
+    values.push(data.book_id);
+  }
+  if (data.user_id !== undefined) {
+    fields.push(`user_id = $${paramIndex++}`);
+    values.push(data.user_id);
+  }
+  if (data.admin_id !== undefined) {
+    fields.push(`admin_id = $${paramIndex++}`);
+    values.push(data.admin_id);
+  }
+  if (data.borrow_date !== undefined) {
+    fields.push(`borrow_date = $${paramIndex++}`);
+    values.push(data.borrow_date);
+  }
+  if (data.return_date !== undefined) {
+    fields.push(`return_date = $${paramIndex++}`);
+    values.push(data.return_date);
+  }
+  if (data.status !== undefined) {
+    fields.push(`status = $${paramIndex++}`);
+    values.push(data.status);
+  }
+
+  // Add the WHERE parameter
+  values.push(id);
+
   const result = await pool.query(
     `UPDATE borrowings
-     SET book_id = $1, user_id = $2, admin_id = $3, borrow_date = $4, return_date = $5, status = $6
-     WHERE borrow_id = $7
+     SET ${fields.join(", ")}
+     WHERE borrow_id = $${paramIndex}
      RETURNING *`,
-    [
-      book_id,
-      user_id,
-      admin_id || null,
-      borrow_date || null,
-      return_date || null,
-      status || "Dipinjam",
-      id,
-    ]
+    values
   );
   return result.rows[0];
 }
