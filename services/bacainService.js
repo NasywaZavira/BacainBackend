@@ -24,7 +24,11 @@ async function updateBooks(id, data) {
   const { title, author, blurb, genre, status } = data;
   const result = await pool.query(
     `UPDATE books
-SET title = $1, author = $2, blurb = $3, genre = $4, status = $5
+SET title = COALESCE($1, title), 
+    author = COALESCE($2, author), 
+    blurb = COALESCE($3, blurb), 
+    genre = COALESCE($4, genre), 
+    status = COALESCE($5, status)
 WHERE book_id = $6
 RETURNING *`,
     [title, author, blurb, genre, status, id]
@@ -123,7 +127,6 @@ async function deleteAdmin(id) {
   return result.rows[0];
 }
 
-
 // BORROWINGS
 async function getAllBorrowings() {
   const result = await pool.query(
@@ -155,7 +158,14 @@ async function addBorrowing(data) {
   const result = await pool.query(
     `INSERT INTO borrowings (book_id, user_id, admin_id, borrow_date, return_date, status)
      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-    [book_id, user_id, admin_id || null, borrow_date || null, return_date || null, status || 'Dipinjam']
+    [
+      book_id,
+      user_id,
+      admin_id || null,
+      borrow_date || new Date().toISOString().split("T")[0],
+      return_date || null,
+      status || "Menunggu Persetujuan",
+    ]
   );
   return result.rows[0];
 }
@@ -167,7 +177,15 @@ async function updateBorrowing(id, data) {
      SET book_id = $1, user_id = $2, admin_id = $3, borrow_date = $4, return_date = $5, status = $6
      WHERE borrow_id = $7
      RETURNING *`,
-    [book_id, user_id, admin_id || null, borrow_date || null, return_date || null, status || 'Dipinjam', id]
+    [
+      book_id,
+      user_id,
+      admin_id || null,
+      borrow_date || null,
+      return_date || null,
+      status || "Dipinjam",
+      id,
+    ]
   );
   return result.rows[0];
 }
@@ -179,8 +197,6 @@ async function deleteBorrowing(id) {
   );
   return result.rows[0];
 }
-
-
 
 module.exports = {
   getAllBooks,
@@ -203,5 +219,4 @@ module.exports = {
   addBorrowing,
   updateBorrowing,
   deleteBorrowing,
-
 };
